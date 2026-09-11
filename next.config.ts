@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["cameo-ninth-janitor.ngrok-free.dev"],
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "img.clerk.com" },
       { protocol: "https", hostname: "utfs.io" },
       { protocol: "https", hostname: "*.ufs.sh" },
     ],

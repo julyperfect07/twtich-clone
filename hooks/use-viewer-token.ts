@@ -16,7 +16,9 @@ export const useViewerToken = (hostIdentity: string) => {
         const viewerToken = await createViewerToken(hostIdentity);
         setToken(viewerToken);
 
-        const decodedToken = jwtDecode(viewerToken) as JwtPayload & { name?: string }
+        const decodedToken = jwtDecode(viewerToken) as JwtPayload & {
+          name?: string;
+        };
         const name = decodedToken?.name;
         const identity = decodedToken.sub;
 
@@ -27,13 +29,12 @@ export const useViewerToken = (hostIdentity: string) => {
         if (name) {
           setName(name);
         }
-
       } catch (error) {
         console.error("Failed to create a LiveKit viewer token", error);
         setError(true);
         toast.error("Could not connect to the stream");
       }
-    }
+    };
 
     createToken();
   }, [hostIdentity]);
