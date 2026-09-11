@@ -1,7 +1,10 @@
 import { db } from "@/lib/db"
 import { getSelf } from "@/lib/auth-service"
+import { syncLiveKitStreamStatus } from "@/lib/livekit-service"
 
 export const getStreams = async () => {
+  await syncLiveKitStreamStatus();
+
   let userId;
 
   try {

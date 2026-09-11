@@ -25,6 +25,7 @@ export const ResultCard = ({
           fallback={data.user.imageUrl}
           isLive={data.isLive}
           username={data.user.username}
+          hostIdentity={data.user.id}
         />
         <div className="flex gap-x-3">
           <UserAvatar
