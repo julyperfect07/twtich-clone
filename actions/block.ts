@@ -6,12 +6,6 @@ import { RoomServiceClient } from "livekit-server-sdk";
 import { getSelf } from "@/lib/auth-service";
 import { blockUser, unblockUser } from "@/lib/block-service"
 
-const roomService = new RoomServiceClient(
-  process.env.LIVEKIT_API_URL!,
-  process.env.LIVEKIT_API_KEY!,
-  process.env.LIVEKIT_API_SECRET!,
-);
-
 export const onBlock = async (id: string) => {
   const self = await getSelf();
 
@@ -24,6 +18,13 @@ export const onBlock = async (id: string) => {
   }
 
   try {
+    const apiUrl = process.env.LIVEKIT_API_URL;
+    const apiKey = process.env.LIVEKIT_API_KEY;
+    const apiSecret = process.env.LIVEKIT_API_SECRET;
+    if (!apiUrl || !apiKey || !apiSecret) {
+      throw new Error("LiveKit environment variables are not configured");
+    }
+    const roomService = new RoomServiceClient(apiUrl, apiKey, apiSecret);
     await roomService.removeParticipant(self.id, id);
   } catch {
     // This means user is not in the room

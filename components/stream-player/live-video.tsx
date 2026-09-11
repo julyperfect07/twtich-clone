@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Participant, Track } from "livekit-client";
 import { useTracks } from "@livekit/components-react";
-import { useEventListener } from "usehooks-ts";
 
 import { VolumeControl } from "./volume-control";
 import { FullscreenControl } from "./fullscreen-control";
@@ -41,7 +40,14 @@ export const LiveVideo = ({
   };
   
   useEffect(() => {
-    onVolumeChange(0);
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement !== null);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
 
   const toggleFullscreen = () => {
@@ -52,27 +58,35 @@ export const LiveVideo = ({
     }
   };
 
-  const handleFullscreenChange = () => {
-    const isCurrentlyFullscreen = document.fullscreenElement !== null;
-    setIsFullscreen(isCurrentlyFullscreen);
-  }
+  const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone]);
 
-  useEventListener("fullscreenchange", handleFullscreenChange, wrapperRef);
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    const participantTracks = tracks.filter(
+      (track) => track.participant.identity === participant.identity,
+    );
 
-  useTracks([Track.Source.Camera, Track.Source.Microphone])
-    .filter((track) => track.participant.identity === participant.identity)
-    .forEach((track) => {
-      if (videoRef.current) {
-        track.publication.track?.attach(videoRef.current)
+    participantTracks.forEach((track) => {
+      if (videoElement) {
+        track.publication.track?.attach(videoElement);
       }
     });
+
+    return () => {
+      participantTracks.forEach((track) => {
+        if (videoElement) {
+          track.publication.track?.detach(videoElement);
+        }
+      });
+    };
+  }, [participant.identity, tracks]);
 
   return (
     <div 
       ref={wrapperRef}
       className="relative h-full flex"
     >
-      <video ref={videoRef} width="100%" />
+      <video ref={videoRef} width="100%" muted />
       <div className="absolute top-0 h-full w-full opacity-0 hover:opacity-100 hover:transition-all">
         <div className="absolute bottom-0 flex h-14 w-full items-center justify-between bg-gradient-to-r from-neutral-900 px-4">
           <VolumeControl

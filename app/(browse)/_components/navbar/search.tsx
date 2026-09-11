@@ -1,5 +1,4 @@
 "use client";
-import qs from "query-string";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SearchIcon, X } from "lucide-react";
@@ -11,14 +10,8 @@ export const Search = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!value) return;
-    const url = qs.stringifyUrl(
-      {
-        url: "/search",
-        query: { term: value },
-      },
-      { skipEmptyString: true },
-    );
-    router.push(url);
+    const params = new URLSearchParams({ term: value });
+    router.push(`/search?${params.toString()}`);
   };
   const onClear = () => {
     setValue("");

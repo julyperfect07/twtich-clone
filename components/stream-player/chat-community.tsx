@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 import { useParticipants } from "@livekit/components-react";
 import { LocalParticipant, RemoteParticipant } from "livekit-client";
 
@@ -22,7 +22,7 @@ export const ChatCommunity = ({
   isHidden
 }: ChatCommunityProps) => {
   const [value, setValue] = useState("");
-  const debouncedValue = useDebounce<string>(value, 500);
+  const [debouncedValue] = useDebounceValue(value, 500);
 
   const participants = useParticipants();
 
