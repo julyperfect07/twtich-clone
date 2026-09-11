@@ -8,7 +8,7 @@ export const getSelf = async () => {
     throw new Error("Unauthorized");
   }
 
-  const user = await db.user.findUnique({
+  let user = await db.user.findUnique({
     where: { externalId: self.id },
   });
 
@@ -16,26 +16,14 @@ export const getSelf = async () => {
     throw new Error("not found");
   }
 
-  return user;
-};
-
-export const getSelfByUsername = async (username: string) => {
-  const self = await currentUser();
-
-  if (!self || !self.username) {
-    throw new Error("Unauthorized");
-  }
-
-  const user = await db.user.findUnique({
-    where: { username }
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  if (self.username !== user.username) {
-    throw new Error("Unauthorized");
+  if (user.username !== self.username || user.imageUrl !== self.imageUrl) {
+    user = await db.user.update({
+      where: { externalId: self.id },
+      data: {
+        username: self.username,
+        imageUrl: self.imageUrl,
+      },
+    });
   }
 
   return user;
