@@ -47,8 +47,17 @@ export const StreamPlayer = ({
     token,
     name,
     identity,
+    error,
   } = useViewerToken(user.id);
   const { collapsed } = useChatSidebar((state) => state);
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
+        Could not connect to LiveKit. Please refresh the page and try again.
+      </div>
+    );
+  }
 
   if (!token || !name || !identity) {
     return <StreamPlayerSkeleton />

@@ -8,6 +8,7 @@ export const useViewerToken = (hostIdentity: string) => {
   const [token, setToken] = useState("");
   const [name, setName] = useState("");
   const [identity, setIdentity] = useState("");
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const createToken = async () => {
@@ -17,7 +18,7 @@ export const useViewerToken = (hostIdentity: string) => {
 
         const decodedToken = jwtDecode(viewerToken) as JwtPayload & { name?: string }
         const name = decodedToken?.name;
-        const identity = decodedToken.jti;
+        const identity = decodedToken.sub;
 
         if (identity) {
           setIdentity(identity);
@@ -27,8 +28,10 @@ export const useViewerToken = (hostIdentity: string) => {
           setName(name);
         }
 
-      } catch {
-        toast.error("Something went wrong");
+      } catch (error) {
+        console.error("Failed to create a LiveKit viewer token", error);
+        setError(true);
+        toast.error("Could not connect to the stream");
       }
     }
 
@@ -39,5 +42,6 @@ export const useViewerToken = (hostIdentity: string) => {
     token,
     name,
     identity,
+    error,
   };
 };
